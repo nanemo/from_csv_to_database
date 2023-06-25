@@ -1,5 +1,6 @@
 package com.nanemo.from_csv_to_database.service.impl;
 
+import com.nanemo.from_csv_to_database.dto.WordDtoString;
 import com.nanemo.from_csv_to_database.entity.Word;
 import com.nanemo.from_csv_to_database.exception.NotFoundException;
 import com.nanemo.from_csv_to_database.repository.WordRepository;
@@ -24,20 +25,28 @@ public class WordServiceImpl implements WordService {
     private final WordRepository repository;
 
     @Override
-    public Boolean insertToDatabase(Set<Word> words) {
-        return words.stream().map(word -> {
-            int count = 0;
-            if (repository.findByWord(word.getWord()).isEmpty()) {
-                repository.save(word);
+    public Boolean insertToDatabase(Set<WordDtoString> wordsFromCSV) {
+        Set<Word> newWordsForContain = new HashSet<>();
+        int count = 0;
+        Set<String> allWordsFromDatabase = new HashSet<>(repository.getAllWords());
+
+        for (WordDtoString word : wordsFromCSV) {
+            if (!allWordsFromDatabase.contains(word.getWord())) {
+                newWordsForContain.add(new Word().setWord(word.getWord()));
                 count++;
             }
-            return count > 0;
-        }).findFirst().isPresent();
+        }
+
+        if (count > 0) {
+            repository.saveAll(newWordsForContain);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public Boolean insert(String csvTableName) {
-        Set<Word> words;
+        Set<WordDtoString> words;
         try {
             words = new HashSet<>(readWordsFromCSV(csvTableName));
         } catch (FileNotFoundException e) {
@@ -50,9 +59,10 @@ public class WordServiceImpl implements WordService {
         return false;
     }
 
-    private List<Word> readWordsFromCSV(String csvTableName) throws FileNotFoundException {
-        return new CsvToBeanBuilder<Word>(new FileReader(tableNameGenerator(csvTableName)))
-                .withType(Word.class)
+    private List<WordDtoString> readWordsFromCSV(String csvTableName) throws FileNotFoundException {
+        String fileName = tableNameGenerator(csvTableName);
+        return new CsvToBeanBuilder<WordDtoString>(new FileReader(fileName))
+                .withType(WordDtoString.class)
                 .build()
                 .parse();
     }
