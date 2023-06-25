@@ -2,22 +2,27 @@ package com.nanemo.from_csv_to_database.service.impl;
 
 import com.nanemo.from_csv_to_database.dto.WordDtoString;
 import com.nanemo.from_csv_to_database.entity.Word;
-import com.nanemo.from_csv_to_database.exception.NotFoundException;
+import com.nanemo.from_csv_to_database.exception.TableNotFoundException;
 import com.nanemo.from_csv_to_database.repository.WordRepository;
 import com.nanemo.from_csv_to_database.service.WordService;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WordServiceImpl implements WordService {
     @Value("${file.directory}")
     private String fileDirectory;
@@ -25,38 +30,21 @@ public class WordServiceImpl implements WordService {
     private final WordRepository repository;
 
     @Override
-    public Boolean insertToDatabase(Set<WordDtoString> wordsFromCSV) {
-        Set<Word> newWordsForContain = new HashSet<>();
-        int count = 0;
-        Set<String> allWordsFromDatabase = new HashSet<>(repository.getAllWords());
-
-        for (WordDtoString word : wordsFromCSV) {
-            if (!allWordsFromDatabase.contains(word.getWord())) {
-                newWordsForContain.add(new Word().setWord(word.getWord()));
-                count++;
-            }
-        }
-
-        if (count > 0) {
-            repository.saveAll(newWordsForContain);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public Boolean insert(String csvTableName) {
+    @Transactional
+    public ResponseEntity<String> insert(String csvTableName) {
         Set<WordDtoString> words;
         try {
             words = new HashSet<>(readWordsFromCSV(csvTableName));
         } catch (FileNotFoundException e) {
-            throw new NotFoundException(e.getMessage(), 404);
+            throw new TableNotFoundException("Table with this name is not found!", 404);
         }
 
         if (!words.isEmpty()) {
-            return insertToDatabase(words);
+            int addedWordsSize = insertToDatabase(words);
+            return addedWordsSize > 0 ? new ResponseEntity<>(addedWordsSize + " words were added to the database successfully!", HttpStatusCode.valueOf(202))
+                    : new ResponseEntity<>("No one words were added to the database!", HttpStatusCode.valueOf(200));
         }
-        return false;
+        return ResponseEntity.ok("There is not any words for adding to the database!");
     }
 
     private List<WordDtoString> readWordsFromCSV(String csvTableName) throws FileNotFoundException {
@@ -67,6 +55,15 @@ public class WordServiceImpl implements WordService {
                 .parse();
     }
 
+    private int insertToDatabase(Set<WordDtoString> wordsFromCSV) {
+        Set<String> allWordsFromDatabase = repository.getAllWords();
+
+        List<Word> saved = repository.saveAll(wordsFromCSV.stream().map(WordDtoString::getWord)
+                .filter(s -> !(allWordsFromDatabase.contains(s)))
+                .map(s -> new Word().setWord(s)).collect(Collectors.toSet()));
+
+        return saved.size();
+    }
 
     private String tableNameGenerator(String csvTableName) {
         return String.format("%s%s.csv", fileDirectory, csvTableName);

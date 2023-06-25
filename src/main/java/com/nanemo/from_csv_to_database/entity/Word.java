@@ -25,7 +25,4 @@ public class Word implements Serializable {
         return this;
     }
 
-    public Word(String word) {
-        this.word = word;
-    }
 }
