@@ -5,12 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 import java.util.Set;
 
 @Repository
 public interface WordRepository extends JpaRepository<Word, Integer> {
-    Optional<Word> findByWord(String word);
 
     @Query("select w.word from Word w")
     Set<String> getAllWords();
