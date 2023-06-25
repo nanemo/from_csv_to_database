@@ -1,11 +1,13 @@
 package com.nanemo.from_csv_to_database.service;
 
+import com.nanemo.from_csv_to_database.dto.WordDtoString;
 import com.nanemo.from_csv_to_database.entity.Word;
 
+import java.util.Set;
+
 public interface WordService {
-    boolean insertIntoDatabase();
+    Boolean insertToDatabase(Set<WordDtoString> words);
 
-    String getWordsFromCSV();
+    Boolean insert(String csvTableName);
 
-    Word getWordsFromDatabase();
 }

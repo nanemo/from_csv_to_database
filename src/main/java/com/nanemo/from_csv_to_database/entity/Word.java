@@ -1,15 +1,31 @@
 package com.nanemo.from_csv_to_database.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Word {
+@ToString
+@Entity
+@Table(name = "words")
+public class Word implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "word_id")
     private Integer wordId;
+    @Column(name = "word")
     private String word;
+
+    public Word setWord(String word) {
+        this.word = word;
+        return this;
+    }
+
+    public Word(String word) {
+        this.word = word;
+    }
 }
