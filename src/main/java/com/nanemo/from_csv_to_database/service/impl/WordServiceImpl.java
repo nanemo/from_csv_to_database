@@ -28,7 +28,7 @@ public class WordServiceImpl implements WordService {
     @Value("${file.directory}")
     private String fileDirectory;
 
-    private final WordRepository repository;
+    private final WordRepository wordRepository;
     private final FilePath filePath;
 
     @Override
@@ -58,9 +58,9 @@ public class WordServiceImpl implements WordService {
     }
 
     private int insertToDatabase(Set<WordDtoString> wordsFromCSV) {
-        Set<String> allWordsFromDatabase = repository.getAllWords();
+        Set<String> allWordsFromDatabase = wordRepository.getAllWords();
 
-        List<Word> saved = repository.saveAll(wordsFromCSV.stream().map(WordDtoString::getWord)
+        List<Word> saved = wordRepository.saveAll(wordsFromCSV.stream().map(WordDtoString::getWord)
                 .filter(s -> !(allWordsFromDatabase.contains(s)))
                 .map(s -> new Word().setWord(s)).collect(Collectors.toSet()));
 

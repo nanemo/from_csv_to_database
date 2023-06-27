@@ -25,3 +25,5 @@ create table texts
 );
 
 create index ind_text_id on texts(text_id);
+
+select * from texts left join titles t on t.title_id = texts.title_id LIMIT 1;

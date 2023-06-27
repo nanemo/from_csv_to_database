@@ -10,4 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TitleTextDto {
+    private String title;
+    private String text;
 }
