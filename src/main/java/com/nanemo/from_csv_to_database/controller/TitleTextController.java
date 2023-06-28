@@ -1,7 +1,7 @@
 package com.nanemo.from_csv_to_database.controller;
 
 import com.nanemo.from_csv_to_database.dto.TitleTextDto;
-import com.nanemo.from_csv_to_database.service.TitleTextService;
+import com.nanemo.from_csv_to_database.service.TitleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/texts")
 public class TitleTextController {
 
-    private final TitleTextService titleTextService;
+    private final TitleService titleService;
 
     @PostMapping
     public ResponseEntity<String> insertInTables(@RequestBody TitleTextDto titleTextDto) {
