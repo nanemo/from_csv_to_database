@@ -3,7 +3,6 @@ package com.nanemo.from_csv_to_database.service.impl;
 import com.nanemo.from_csv_to_database.dto.TitleTextDto;
 import com.nanemo.from_csv_to_database.entity.Text;
 import com.nanemo.from_csv_to_database.entity.Title;
-import com.nanemo.from_csv_to_database.exception.TableNotFoundException;
 import com.nanemo.from_csv_to_database.repository.TitleRepository;
 import com.nanemo.from_csv_to_database.service.TitleService;
 import com.nanemo.from_csv_to_database.util.FilePath;
@@ -33,7 +32,7 @@ public class TitleServiceImpl implements TitleService {
     private final TitleRepository titleRepository;
     private final FilePath filePath;
 
-
+    //TODO Finish the Exceptions
     @Override
     public ResponseEntity<Object> insert(String csvTableName) {
         Set<TitleTextDto> titleTextDtoSet;
@@ -41,7 +40,7 @@ public class TitleServiceImpl implements TitleService {
         try {
             titleTextDtoSet = new HashSet<>(readWordsFromCSV(csvTableName));
         } catch (FileNotFoundException e) {
-            throw new TableNotFoundException("Table with this name is not found!", 404);
+            throw new FileNotFoundException(csvTableName + " table name is not exist!");
         }
 
         return insertIntoDatabase(titleTextDtoSet);
