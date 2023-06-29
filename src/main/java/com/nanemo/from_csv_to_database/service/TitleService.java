@@ -4,5 +4,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface TitleService {
 
-    ResponseEntity<String> insert(String csvTableName);
+    ResponseEntity<Object> insert(String csvTableName);
 }

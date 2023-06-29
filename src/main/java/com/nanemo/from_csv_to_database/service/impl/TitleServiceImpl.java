@@ -1,7 +1,6 @@
 package com.nanemo.from_csv_to_database.service.impl;
 
 import com.nanemo.from_csv_to_database.dto.TitleTextDto;
-import com.nanemo.from_csv_to_database.dto.WordDtoString;
 import com.nanemo.from_csv_to_database.entity.Text;
 import com.nanemo.from_csv_to_database.entity.Title;
 import com.nanemo.from_csv_to_database.exception.TableNotFoundException;
@@ -36,17 +35,16 @@ public class TitleServiceImpl implements TitleService {
 
 
     @Override
-    public ResponseEntity<String> insert(String csvTableName) {
-        Set<TitleTextDto> wordDtoStrings;
+    public ResponseEntity<Object> insert(String csvTableName) {
+        Set<TitleTextDto> titleTextDtoSet;
 
         try {
-            wordDtoStrings = new HashSet<>(readWordsFromCSV(csvTableName));
+            titleTextDtoSet = new HashSet<>(readWordsFromCSV(csvTableName));
         } catch (FileNotFoundException e) {
             throw new TableNotFoundException("Table with this name is not found!", 404);
         }
 
-        insertIntoDatabase(wordDtoStrings);
-        return null;
+        return insertIntoDatabase(titleTextDtoSet);
     }
 
     private List<TitleTextDto> readWordsFromCSV(String csvTableName) throws FileNotFoundException {
