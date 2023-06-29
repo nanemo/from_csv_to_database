@@ -12,4 +12,5 @@ import lombok.Setter;
 public class TitleTextDto {
     private String title;
     private String text;
+
 }

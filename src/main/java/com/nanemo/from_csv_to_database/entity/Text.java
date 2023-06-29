@@ -5,9 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.Hibernate;
-
-import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,23 +25,16 @@ public class Text {
     @JoinColumn(name = "title_id")
     private Title title;
 
-    public Title getTitle(){
+    public Title getTitle() {
         if (this.title == null) {
             this.title = new Title();
         }
         return this.title;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Text text = (Text) o;
-        return textId != null && Objects.equals(textId, text.textId);
+    public Text setText(String text) {
+        this.text = text;
+        return this;
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
