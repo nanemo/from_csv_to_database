@@ -2,7 +2,6 @@ package com.nanemo.from_csv_to_database.exception;
 
 public class ValidateFileNameException extends Exception {
     public ValidateFileNameException() {
-
     }
 
     public ValidateFileNameException(String message) {

@@ -3,11 +3,13 @@ package com.nanemo.from_csv_to_database.service.impl;
 import com.nanemo.from_csv_to_database.dto.TitleTextDto;
 import com.nanemo.from_csv_to_database.entity.Text;
 import com.nanemo.from_csv_to_database.entity.Title;
+import com.nanemo.from_csv_to_database.exception.ValidateFileNameException;
 import com.nanemo.from_csv_to_database.repository.TitleRepository;
 import com.nanemo.from_csv_to_database.service.TitleService;
 import com.nanemo.from_csv_to_database.util.FilePath;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,26 +35,29 @@ public class TitleServiceImpl implements TitleService {
     private final FilePath filePath;
 
     //TODO Finish the Exceptions
+    @SneakyThrows
     @Override
     public ResponseEntity<Object> insert(String csvTableName) {
         Set<TitleTextDto> titleTextDtoSet;
 
-        try {
             titleTextDtoSet = new HashSet<>(readWordsFromCSV(csvTableName));
-        } catch (FileNotFoundException e) {
-            throw new FileNotFoundException(csvTableName + " table name is not exist!");
-        }
 
         return insertIntoDatabase(titleTextDtoSet);
     }
 
-    private List<TitleTextDto> readWordsFromCSV(String csvTableName) throws FileNotFoundException {
+    private List<TitleTextDto> readWordsFromCSV(String csvTableName) throws ValidateFileNameException {
         String fileName = filePath.tableNameGenerator(fileDirectory, csvTableName);
-        return new CsvToBeanBuilder<TitleTextDto>(new FileReader(fileName))
-                .withType(TitleTextDto.class)
-                .build()
-                .parse();
+
+        try {
+            return new CsvToBeanBuilder<TitleTextDto>(new FileReader(fileName))
+                    .withType(TitleTextDto.class)
+                    .build()
+                    .parse();
+        } catch (FileNotFoundException ex) {
+            throw new ValidateFileNameException("Table name " + csvTableName + " does not exist!", ex);
+        }
     }
+
 
     private ResponseEntity<Object> insertIntoDatabase(Set<TitleTextDto> titleTextListFromCSV) {
         Set<TitleTextDto> checkedTitleTextListFromCSV = isTitleAndTextCouple(titleTextListFromCSV);
