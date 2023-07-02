@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -35,18 +36,16 @@ public class WordServiceImpl implements WordService {
     @Transactional
     public ResponseEntity<String> insert(String csvTableName) {
         Set<WordDtoString> words;
-        try {
-            words = new HashSet<>(readWordsFromCSV(csvTableName));
-            if (!words.isEmpty()) {
-                int addedWordsSize = insertToDatabase(words);
-                return addedWordsSize > 0 ? new ResponseEntity<>(addedWordsSize + " words were added to the database successfully!", HttpStatusCode.valueOf(202))
-                        : new ResponseEntity<>("No one words were added to the database!", HttpStatusCode.valueOf(200));
-            }
-
-            return ResponseEntity.ok("There is not any words for adding to the database!");
-        } catch (ValidateFileNameException ex) {
-            throw ex;
+        words = new HashSet<>(readWordsFromCSV(csvTableName));
+        if (!words.isEmpty()) {
+            int addedWordsSize = insertToDatabase(words);
+            return addedWordsSize > 0 ? new ResponseEntity<>(addedWordsSize +
+                    " words were added to the database successfully!", HttpStatusCode.valueOf(202))
+                    : new ResponseEntity<>("No one words were added to the database!"
+                    , HttpStatusCode.valueOf(200));
         }
+
+        return ResponseEntity.ok("There is not any words for adding to the database!");
 
     }
 
