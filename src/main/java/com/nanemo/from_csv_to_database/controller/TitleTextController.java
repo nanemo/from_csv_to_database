@@ -1,7 +1,7 @@
 package com.nanemo.from_csv_to_database.controller;
 
 import com.nanemo.from_csv_to_database.dto.TableDto;
-import com.nanemo.from_csv_to_database.service.WordService;
+import com.nanemo.from_csv_to_database.service.TitleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,18 +9,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 @RestController
-@RequestMapping("/words")
+@RequestMapping("/texts")
 @RequiredArgsConstructor
-public class WordController {
+public class TitleTextController {
 
-    private final WordService wordService;
+    private final TitleService titleService;
 
-    @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> insertTable(@RequestBody TableDto tableDto) {
-        return wordService.insert(tableDto.getTableName());
+    @PostMapping
+    public ResponseEntity<Object> insertInTables(@RequestBody TableDto tableDto) {
+        return titleService.insert(tableDto.getTableName());
+
     }
 
 }
