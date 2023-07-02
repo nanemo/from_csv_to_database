@@ -25,18 +25,3 @@ create table texts
 );
 
 create index ind_text_id on texts(text_id);
-
-select ti.*, t.* from titles ti right join texts t on ti.title_id = t.title_id;
-
-select *
-from titles;
-
-select *
-    from texts;
-
-drop table titles, texts;
-
-delete from texts;
-delete from titles;
-
-select t.title_id, t.title from titles t where t.title='Title 2' ORDER BY t.title_id;
