@@ -12,7 +12,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WordDto implements Serializable {
+public class TableDto implements Serializable {
     private String tableName;
     private Integer rowId;
     private Set<String> values;

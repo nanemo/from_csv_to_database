@@ -1,6 +1,6 @@
 package com.nanemo.from_csv_to_database.controller;
 
-import com.nanemo.from_csv_to_database.dto.WordDto;
+import com.nanemo.from_csv_to_database.dto.TableDto;
 import com.nanemo.from_csv_to_database.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,8 @@ public class WordController {
     private final WordService wordService;
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> insertTable(@RequestBody WordDto wordDto) {
-        return wordService.insert(wordDto.getTableName());
+    public ResponseEntity<String> insertTable(@RequestBody TableDto tableDto) {
+        return wordService.insert(tableDto.getTableName());
     }
 
 }

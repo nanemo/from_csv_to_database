@@ -5,11 +5,10 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@Getter
+@Setter
 @Entity
 @Table(name = "words")
 public class Word implements Serializable {
@@ -26,3 +25,4 @@ public class Word implements Serializable {
     }
 
 }
+
