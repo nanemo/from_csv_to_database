@@ -1,10 +1,12 @@
 package com.nanemo.from_csv_to_database.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,6 +24,8 @@ public class Title {
     private String title;
 
     @OneToOne(mappedBy = "title")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @JsonIgnore
     private Text text;
 
     public Text getText() {

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,6 +24,7 @@ public class Text {
 
     @OneToOne
     @JoinColumn(name = "title_id")
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private Title title;
 
     public Title getTitle() {

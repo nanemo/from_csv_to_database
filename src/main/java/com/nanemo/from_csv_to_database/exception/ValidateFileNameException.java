@@ -1,6 +1,6 @@
 package com.nanemo.from_csv_to_database.exception;
 
-public class ValidateFileNameException extends Exception {
+public class ValidateFileNameException extends RuntimeException {
     public ValidateFileNameException() {
     }
 
@@ -15,5 +15,7 @@ public class ValidateFileNameException extends Exception {
     public ValidateFileNameException(Throwable cause) {
         super(cause);
     }
+
+
 
 }
