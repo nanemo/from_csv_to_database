@@ -2,10 +2,13 @@ package com.nanemo.from_csv_to_database.service.impl;
 
 import com.nanemo.from_csv_to_database.dto.WordDtoString;
 import com.nanemo.from_csv_to_database.entity.Word;
+import com.nanemo.from_csv_to_database.exception.CsvFormatException;
 import com.nanemo.from_csv_to_database.exception.ValidateFileNameException;
 import com.nanemo.from_csv_to_database.repository.WordRepository;
 import com.nanemo.from_csv_to_database.service.WordService;
 import com.nanemo.from_csv_to_database.util.FilePath;
+import com.opencsv.CSVReader;
+import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,21 +44,30 @@ public class WordServiceImpl implements WordService {
             int addedWordsSize = insertToDatabase(words);
             return addedWordsSize > 0 ? new ResponseEntity<>(addedWordsSize +
                     " words were added to the database successfully!", HttpStatusCode.valueOf(202))
-                    : new ResponseEntity<>("No one words were added to the database!"
+                    : new ResponseEntity<>("You can not insert duplicate words into data!"
                     , HttpStatusCode.valueOf(200));
         }
 
         return ResponseEntity.ok("There is not any words for adding to the database!");
-
     }
 
     private List<WordDtoString> readWordsFromCSV(String csvTableName) {
         String fileName = filePath.tableNameGenerator(fileDirectory, csvTableName);
-        try {
-            return new CsvToBeanBuilder<WordDtoString>(new FileReader(fileName))
+        try (CSVReader csvReader = new CSVReader(new FileReader(fileName))) {
+            CsvToBean<WordDtoString> csvToBean = new CsvToBeanBuilder<WordDtoString>(csvReader)
                     .withType(WordDtoString.class)
-                    .build()
-                    .parse();
+                    .build();
+
+            List<WordDtoString> wordToList = new ArrayList<>();
+
+            for (WordDtoString wordDtoString : csvToBean) {
+                if (wordDtoString.getAnotherColumn() != null && !wordDtoString.getAnotherColumn().isEmpty()) {
+                    throw new CsvFormatException("CSV file must has single columns");
+                }
+                wordToList.add(wordDtoString);
+            }
+            return wordToList;
+
         } catch (IOException ex) {
             throw new ValidateFileNameException("Table name " + csvTableName + " does not exist!");
         }
